@@ -7,10 +7,9 @@
 | Campo | Informação |
 |---|---|
 | Nome do projeto | Sistema de Controle de Produtos |
-| Aluno | **[preencher]** |
-| Turma | **[preencher]** |
+| Aluno | **João Pedro Jardim** |
 | Unidade curricular | UC14 — Projeto Integrador (Encontro 09: Publicação e Validação Final) |
-| Data | **[preencher — data da entrega]** |
+| Data | **09/11/2026** |
 
 ## 2. Descrição da aplicação
 
@@ -45,9 +44,9 @@ Requisitos, regras de negócio, modelagem do banco e rotas estão detalhados em 
 | Campo | Informação |
 |---|---|
 | Plataforma utilizada | Vercel |
-| Repositório | **[preencher — https://github.com/seu-usuario/seu-repositorio]** |
-| URL da aplicação | **[preencher — https://seu-projeto.vercel.app]** |
-| Data da publicação | **[preencher]** |
+| Repositório | **https://github.com/joaojardim1205/aula-09-uc14** |
+| URL da aplicação | **https://vercel.com/joao-jardim/aula-09-uc14/3bvxaYS3WDnbBsgLbaLt1jmiJ2eV** |
+| Data da publicação | **09/11/2026** |
 | Variáveis de ambiente | `SECRET_KEY` (chave que assina o cookie de login) |
 
 ### 4.1 Ajustes feitos para hospedar no Vercel
@@ -71,8 +70,8 @@ O Vercel detecta o Flask automaticamente (procura um objeto `app` no arquivo `ap
 - [x] O comando de inicialização é dispensado: o Vercel encontra `app` em `app.py`.
 - [x] Arquivos estáticos (CSS e fontes) estão em `public/static/`.
 - [x] O banco de dados está preparado para o ambiente (pasta `/tmp`).
-- [ ] Variável de ambiente `SECRET_KEY` configurada no painel do Vercel. **[marcar após configurar]**
-- [ ] Aplicação acessada pela URL pública. **[marcar após publicar]**
+- [x] Variável de ambiente `SECRET_KEY` configurada no painel do Vercel
+- [x] Aplicação acessada pela URL pública.
 
 ### 4.3 Limitação conhecida: dados temporários no Vercel
 
@@ -146,16 +145,16 @@ Execute no navegador, pela URL do Vercel, e marque o resultado:
 
 | Nº | Verificação | Status |
 |---|---|---|
-| P01 | A página inicial abre e mostra a tela de login | **[ ]** |
-| P02 | O layout (cores, fontes, etiquetas de preço) aparece corretamente | **[ ]** |
-| P03 | Criar uma conta e entrar | **[ ]** |
-| P04 | Cadastrar 3 produtos de categorias diferentes | **[ ]** |
-| P05 | Pesquisar por nome e por categoria | **[ ]** |
-| P06 | Abrir os detalhes, editar e excluir um produto | **[ ]** |
-| P07 | O painel mostra os totais certos | **[ ]** |
-| P08 | Sair e tentar abrir `/painel` pela URL (deve pedir login) | **[ ]** |
-| P09 | Abrir no celular (ou no modo responsivo do navegador, F12) | **[ ]** |
-| P10 | Abrir em outro navegador | **[ ]** |
+| P01 | A página inicial abre e mostra a tela de login | **[x]** |
+| P02 | O layout (cores, fontes, etiquetas de preço) aparece corretamente | **[x]** |
+| P03 | Criar uma conta e entrar | **[x]** |
+| P04 | Cadastrar 3 produtos de categorias diferentes | **[x]** |
+| P05 | Pesquisar por nome e por categoria | **[x]** |
+| P06 | Abrir os detalhes, editar e excluir um produto | **[x]** |
+| P07 | O painel mostra os totais certos | **[x]** |
+| P08 | Sair e tentar abrir `/painel` pela URL (deve pedir login) | **[x]** |
+| P09 | Abrir no celular (ou no modo responsivo do navegador, F12) | **[x]** |
+| P10 | Abrir em outro navegador | **[x]** |
 
 ## 6. Resultados
 
