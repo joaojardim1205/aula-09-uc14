@@ -1,0 +1,16 @@
+# Ambiente virtual e caches do Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Banco local (é criado automaticamente ao rodar o app)
+sistema.db
+
+# Segredos e configuração local
+.env
+.env.*
+
+# Pasta criada pela CLI do Vercel
+.vercel

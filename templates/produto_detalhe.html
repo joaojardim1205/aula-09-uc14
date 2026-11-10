@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from "_macros.html" import etiqueta, estoque %}
+{% block titulo %}{{ produto.nome }} · Controle de Produtos{% endblock %}
+
+{% block conteudo %}
+<nav class="trilha" aria-label="Você está em">
+    <a href="{{ url_for('produtos') }}">Lista de preços</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ url_for('produtos', busca=produto.categoria) }}">{{ produto.categoria }}</a>
+</nav>
+
+<article class="ficha {{ 'item-esgotado' if produto.estoque == 0 }}">
+    <header class="ficha-topo">
+        <h1 class="titulo">{{ produto.nome }}</h1>
+        <span class="ficha-codigo">Código {{ produto | codigo }}</span>
+    </header>
+
+    <div class="ficha-corpo">
+        <div class="ficha-preco">
+            {{ etiqueta(produto.preco, 'etiqueta-grande') }}
+            {{ estoque(produto.estoque, ESTOQUE_BAIXO) }}
+        </div>
+
+        <dl class="dados">
+            <div><dt>Categoria</dt><dd><a href="{{ url_for('produtos', busca=produto.categoria) }}">{{ produto.categoria }}</a></dd></div>
+            <div><dt>Em estoque</dt><dd>{{ produto.estoque }} {{ 'unidade' if produto.estoque == 1 else 'unidades' }}</dd></div>
+            <div><dt>Valor em estoque</dt><dd>{{ (produto.preco * produto.estoque) | moeda }}</dd></div>
+            <div><dt>Cadastrado por</dt><dd>{{ produto.cadastrado_por }}</dd></div>
+        </dl>
+    </div>
+
+    <footer class="ficha-acoes">
+        <a href="{{ url_for('produto_editar', produto_id=produto.id) }}" class="botao botao-principal">Editar produto</a>
+        <a href="{{ url_for('produtos') }}" class="botao botao-contorno">Voltar para a lista</a>
+        <form method="post" action="{{ url_for('produto_excluir', produto_id=produto.id) }}" class="ficha-excluir"
+              onsubmit='return confirm({{ ("Excluir “" ~ produto.nome ~ "”? Esta ação não pode ser desfeita.") | tojson }});'>
+            <button type="submit" class="botao botao-perigo">Excluir produto</button>
+        </form>
+    </footer>
+</article>
+{% endblock %}

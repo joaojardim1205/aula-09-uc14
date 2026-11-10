@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% set editando = produto and produto.id %}
+{% block titulo %}{{ 'Editar' if editando else 'Novo' }} produto · Controle de Produtos{% endblock %}
+
+{% block conteudo %}
+<nav class="trilha" aria-label="Você está em">
+    <a href="{{ url_for('produtos') }}">Lista de preços</a>
+    <span aria-hidden="true">/</span>
+    {% if editando %}
+    <a href="{{ url_for('produto_detalhe', produto_id=produto.id) }}">{{ produto.nome }}</a>
+    {% else %}
+    <span aria-current="page">Novo produto</span>
+    {% endif %}
+</nav>
+
+<section class="ficha ficha-formulario">
+    <header class="ficha-topo">
+        <h1 class="titulo">{{ 'Editar produto' if editando else 'Cadastrar produto' }}</h1>
+    </header>
+
+    <form method="post" class="formulario ficha-corpo-formulario">
+        <label for="nome">Nome do produto</label>
+        <input type="text" id="nome" name="nome" minlength="3" required
+               value="{{ produto.nome if produto else '' }}" placeholder="Ex.: Teclado mecânico ABNT2">
+
+        <label for="categoria">Categoria</label>
+        <select id="categoria" name="categoria" required>
+            <option value="">Escolha uma categoria</option>
+            {% for categoria in categorias %}
+            <option value="{{ categoria }}" {{ 'selected' if produto and produto.categoria == categoria }}>{{ categoria }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="campos-lado">
+            <div>
+                <label for="preco">Preço unitário</label>
+                <div class="campo-moeda">
+                    <span aria-hidden="true">R$</span>
+                    <input type="text" id="preco" name="preco" inputmode="decimal" required
+                           pattern="[0-9]+([,.][0-9]{1,2})?" title="Use apenas números, com até 2 casas decimais. Ex.: 1299,90"
+                           value="{{ ('%.2f' | format(produto.preco)).replace('.', ',') if produto and produto.preco is number else (produto.preco if produto else '') }}" placeholder="0,00">
+                </div>
+            </div>
+            <div>
+                <label for="estoque">Quantidade em estoque</label>
+                <input type="number" id="estoque" name="estoque" min="0" max="1000000" step="1" inputmode="numeric" required
+                       value="{{ produto.estoque if produto else '' }}" placeholder="0">
+            </div>
+        </div>
+        <p class="dica">Todos os campos são obrigatórios. Com {{ ESTOQUE_BAIXO }} unidades ou menos, o produto aparece como “últimas unidades”.</p>
+
+        <div class="ficha-acoes">
+            <button type="submit" class="botao botao-principal">{{ 'Salvar alterações' if editando else 'Cadastrar produto' }}</button>
+            <a href="{{ url_for('produto_detalhe', produto_id=produto.id) if editando else url_for('produtos') }}" class="botao botao-link">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

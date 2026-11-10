@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block titulo %}Painel · Controle de Produtos{% endblock %}
+
+{% block conteudo %}
+<header class="cabecalho">
+    <div>
+        <h1 class="titulo">Painel</h1>
+        <p class="apoio">Olá, {{ session.usuario_nome }}. Este é o resumo da loja agora.</p>
+    </div>
+    <a href="{{ url_for('produto_novo') }}" class="botao botao-principal">Cadastrar produto</a>
+</header>
+
+<section class="totais" aria-labelledby="totais-titulo">
+    <h2 class="secao-faixa" id="totais-titulo">Totais da loja</h2>
+    <ul>
+        <li><a href="{{ url_for('produtos') }}">{{ 'Produto cadastrado' if total_produtos == 1 else 'Produtos cadastrados' }} <strong>{{ total_produtos }}</strong></a></li>
+        <li><a href="{{ url_for('produtos') }}">{{ 'Unidade em estoque' if total_estoque == 1 else 'Unidades em estoque' }} <strong>{{ total_estoque }}</strong></a></li>
+        <li><a href="{{ url_for('usuarios') }}">{{ 'Usuário' if total_usuarios == 1 else 'Usuários' }} <strong>{{ total_usuarios }}</strong></a></li>
+    </ul>
+</section>
+
+{% if not total_produtos %}
+<section class="vazio">
+    <h2>A lista de preços está vazia</h2>
+    <p>Cadastre o primeiro produto com nome, categoria, preço e quantidade. Os totais acima se atualizam sozinhos.</p>
+    <a href="{{ url_for('produto_novo') }}" class="botao botao-principal">Cadastrar produto</a>
+</section>
+{% endif %}
+{% endblock %}

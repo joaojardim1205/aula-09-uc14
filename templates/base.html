@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Controle de Produtos{% endblock %}</title>
+    <link rel="preload" href="{{ url_for('static', filename='fonts/anton-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <a href="#conteudo" class="pular">Pular para o conteúdo</a>
+    {% if session.usuario_id %}
+    <header class="faixa">
+        <a href="{{ url_for('painel') }}" class="marca">Controle de Produtos</a>
+        <nav class="abas" aria-label="Principal">
+            <a href="{{ url_for('painel') }}" {% if request.endpoint == 'painel' %}class="ativa" aria-current="page"{% endif %}>Painel</a>
+            <a href="{{ url_for('produtos') }}" {% if (request.endpoint or '').startswith('produto') %}class="ativa" aria-current="page"{% endif %}>Produtos</a>
+            <a href="{{ url_for('usuarios') }}" {% if request.endpoint == 'usuarios' %}class="ativa" aria-current="page"{% endif %}>Usuários</a>
+        </nav>
+        <div class="sessao">
+            <span class="sessao-nome">{{ session.usuario_nome }}</span>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </header>
+    <main class="pagina" id="conteudo">
+        {% include "_mensagens.html" %}
+        {% block conteudo %}{% endblock %}
+    </main>
+    {% else %}
+    <main class="acesso" id="conteudo">
+        <div class="acesso-vitrine">
+            <p class="acesso-marca">Controle de Produtos</p>
+            <p class="acesso-lema">Preço, categoria e estoque de cada item da loja, num lugar só.</p>
+            <span class="etiqueta-preco etiqueta-gigante" aria-hidden="true"><span class="etiqueta-rs">R$</span><span class="etiqueta-reais">899</span><span class="etiqueta-centavos">,00</span></span>
+        </div>
+        <div class="acesso-formulario">
+            {% include "_mensagens.html" %}
+            {% block publico %}{% endblock %}
+        </div>
+    </main>
+    {% endif %}
+</body>
+</html>

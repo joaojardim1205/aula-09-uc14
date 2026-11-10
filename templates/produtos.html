@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "_macros.html" import etiqueta, estoque %}
+{% block titulo %}Produtos · Controle de Produtos{% endblock %}
+
+{% block conteudo %}
+<header class="cabecalho">
+    <div>
+        <h1 class="titulo">Lista de preços</h1>
+        <p class="apoio">{{ produtos | length }} {{ 'produto' if produtos | length == 1 else 'produtos' }}{% if busca %} para “{{ busca }}”{% endif %}, agrupados por categoria.</p>
+    </div>
+    <a href="{{ url_for('produto_novo') }}" class="botao botao-principal">Cadastrar produto</a>
+</header>
+
+<form method="get" class="busca" role="search">
+    <label for="busca" class="oculto">Pesquisar produtos</label>
+    <input type="search" id="busca" name="busca" value="{{ busca }}" placeholder="Nome ou categoria">
+    <button type="submit" class="botao botao-contorno">Pesquisar</button>
+    {% if busca %}<a href="{{ url_for('produtos') }}" class="botao botao-link">Limpar pesquisa</a>{% endif %}
+</form>
+
+{% if produtos %}
+    {% for grupo in produtos | groupby('categoria') %}
+    <section class="secao" aria-labelledby="cat-{{ loop.index }}">
+        <h2 class="secao-faixa" id="cat-{{ loop.index }}">
+            {{ grupo.grouper }}
+            <span>{{ grupo.list | length }} {{ 'item' if grupo.list | length == 1 else 'itens' }}</span>
+        </h2>
+        <ul class="vitrine">
+            {% for produto in grupo.list %}
+            <li class="item {{ 'item-esgotado' if produto.estoque == 0 }}">
+                <a href="{{ url_for('produto_detalhe', produto_id=produto.id) }}" class="item-nome">{{ produto.nome }}</a>
+                <span class="item-codigo">{{ produto | codigo }}</span>
+                <div class="item-base">
+                    {{ etiqueta(produto.preco) }}
+                    {{ estoque(produto.estoque, ESTOQUE_BAIXO) }}
+                </div>
+                <div class="item-acoes">
+                    <a href="{{ url_for('produto_editar', produto_id=produto.id) }}">Editar<span class="oculto"> {{ produto.nome }}</span></a>
+                    <form method="post" action="{{ url_for('produto_excluir', produto_id=produto.id) }}"
+                          onsubmit='return confirm({{ ("Excluir “" ~ produto.nome ~ "”? Esta ação não pode ser desfeita.") | tojson }});'>
+                        <button type="submit">Excluir<span class="oculto"> {{ produto.nome }}</span></button>
+                    </form>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endfor %}
+{% elif busca %}
+<section class="vazio">
+    <h2>Nada encontrado para “{{ busca }}”</h2>
+    <p>Confira a grafia ou pesquise por uma categoria, como Monitores ou Periféricos.</p>
+    <a href="{{ url_for('produtos') }}" class="botao botao-contorno">Ver todos os produtos</a>
+</section>
+{% else %}
+<section class="vazio">
+    <h2>Nenhum produto cadastrado</h2>
+    <p>Cada produto que você cadastrar entra aqui, na faixa da sua categoria, com a etiqueta de preço e a quantidade em estoque.</p>
+    <a href="{{ url_for('produto_novo') }}" class="botao botao-principal">Cadastrar produto</a>
+</section>
+{% endif %}
+{% endblock %}

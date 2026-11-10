@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block titulo %}Criar conta · Controle de Produtos{% endblock %}
+
+{% block publico %}
+<h1 class="titulo">Criar conta</h1>
+<p class="apoio">Depois do cadastro, entre e comece a registrar produtos.</p>
+
+<form method="post" class="formulario">
+    <label for="nome">Nome</label>
+    <input type="text" id="nome" name="nome" value="{{ nome or '' }}" autocomplete="name" required autofocus>
+
+    <label for="email">E-mail</label>
+    <input type="email" id="email" name="email" value="{{ email or '' }}" autocomplete="email" required>
+
+    <label for="senha">Senha</label>
+    <input type="password" id="senha" name="senha" minlength="6" autocomplete="new-password"
+           aria-describedby="senha-dica" required>
+    <p class="dica" id="senha-dica">Pelo menos 6 caracteres.</p>
+
+    <button type="submit" class="botao botao-principal botao-largo">Criar conta</button>
+</form>
+
+<p class="troca">Já tem conta? <a href="{{ url_for('login') }}">Entrar</a></p>
+{% endblock %}

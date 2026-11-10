@@ -1,0 +1,473 @@
+/* Controle de Produtos — "tabela de preços da Santa Ifigênia".
+   Folha branca, faixa vermelha de loja, categorias em faixas pretas e cada
+   preço numa etiqueta amarela de balcão. Anton nos títulos e preços,
+   Work Sans no restante. Fontes servidas pelo próprio Flask (static/fonts),
+   para funcionar mesmo sem internet na apresentação. */
+@font-face {
+    font-family: "Anton";
+    src: url("fonts/anton-latin.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Work Sans";
+    src: url("fonts/work-sans-latin.woff2") format("woff2");
+    font-weight: 400 700;
+    font-display: swap;
+}
+
+:root {
+    --branco: #ffffff;
+    --fundo: #ffffff;
+    --fundo-rodape: #f3f3f1;
+    --preto: #1a1a1a;
+    --texto-suave: #575757;
+    --fio: #d2d2d0;
+    --fio-forte: #9c9c9a;
+    --vermelho: #e30613;
+    --vermelho-escuro: #b3050f;
+    --amarelo: #ffe500;
+    --esgotado-fundo: #ececea;
+
+    --display: "Anton", "Arial Narrow", sans-serif;
+    --texto: "Work Sans", "Helvetica Neue", Arial, sans-serif;
+    --margem: clamp(16px, 4vw, 56px);
+}
+
+* { box-sizing: border-box; }
+
+html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--fio-forte) var(--fundo);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--texto);
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--preto);
+    background: var(--fundo);
+    caret-color: var(--vermelho);
+}
+
+::selection { color: var(--preto); background: var(--amarelo); }
+
+a { color: var(--preto); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--vermelho-escuro); }
+
+:focus-visible { outline: 3px solid var(--preto); outline-offset: 2px; }
+
+h1, h2 { margin: 0; }
+
+.oculto {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.pular {
+    position: absolute; left: 12px; top: -60px; z-index: 10;
+    padding: 10px 16px; font-weight: 700;
+    color: var(--preto); background: var(--amarelo);
+}
+.pular:focus { top: 12px; }
+
+.titulo {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: 0.005em;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+}
+
+.apoio { margin: 10px 0 0; max-width: 60ch; color: var(--texto-suave); }
+
+/* ---------- Etiqueta de preço (o elemento da casa) ---------- */
+.etiqueta-preco {
+    display: inline-flex;
+    align-items: flex-start;
+    padding: 0.14em 0.3em 0.06em 0.26em;
+    font-family: var(--display);
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--preto);
+    background: var(--amarelo);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+.etiqueta-rs { margin: 0.2em 0.14em 0 0; font-size: 0.42em; }
+.etiqueta-centavos { margin-top: 0.06em; font-size: 0.5em; }
+.etiqueta-grande { font-size: clamp(3.4rem, 2.4rem + 3vw, 5.5rem); }
+.etiqueta-gigante { font-size: clamp(5rem, 3rem + 7vw, 10rem); }
+
+.estoque { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.estoque-ultimas { font-weight: 700; color: var(--vermelho-escuro); }
+.estoque-esgotado {
+    padding: 2px 10px;
+    font-weight: 700;
+    color: var(--vermelho);
+    border: 2px solid var(--vermelho);
+    transform: rotate(-4deg);
+}
+.item-esgotado .etiqueta-preco { color: var(--texto-suave); background: var(--esgotado-fundo); }
+
+/* ---------- Faixa vermelha (cabeçalho do sistema) ---------- */
+.faixa {
+    display: flex;
+    align-items: stretch;
+    gap: clamp(16px, 3vw, 40px);
+    min-height: 72px;
+    padding: 0 var(--margem);
+    color: var(--branco);
+    background: var(--vermelho);
+}
+.faixa :focus-visible { outline-color: var(--amarelo); }
+.faixa a { color: var(--branco); }
+
+.marca {
+    display: flex; align-items: center;
+    font-family: var(--display);
+    font-size: 1.75rem;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.marca:hover { color: var(--branco); }
+
+.abas { display: flex; align-items: stretch; gap: 4px; }
+.abas a {
+    display: flex; align-items: center;
+    padding: 0 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+}
+.abas a:hover { color: var(--branco); background: var(--vermelho-escuro); }
+.abas a.ativa { border-bottom-color: var(--amarelo); }
+
+.sessao {
+    display: flex; align-items: center; gap: 18px;
+    margin-left: auto;
+    font-size: 0.95rem;
+}
+.sessao-nome { font-weight: 600; }
+.sessao a:hover { color: var(--amarelo); }
+
+/* ---------- Página ---------- */
+.pagina {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px var(--margem) 72px;
+}
+
+.cabecalho {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 20px;
+    margin-bottom: 24px;
+}
+
+.trilha {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+}
+
+/* ---------- Botões ---------- */
+.botao {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 48px;
+    padding: 10px 22px;
+    font: inherit; font-size: 1rem; font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 2px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+}
+.botao-principal { color: var(--amarelo); background: var(--preto); }
+.botao-principal:hover { color: var(--preto); background: var(--amarelo); border-color: var(--preto); }
+.botao-contorno { color: var(--preto); background: var(--branco); border-color: var(--preto); }
+.botao-contorno:hover { color: var(--preto); background: var(--amarelo); }
+.botao-perigo { color: var(--vermelho); background: var(--branco); border-color: var(--vermelho); }
+.botao-perigo:hover { color: var(--branco); background: var(--vermelho); }
+.botao-link { padding-inline: 8px; color: var(--preto); background: none; text-decoration: underline; }
+.botao-largo { width: 100%; margin-top: 28px; }
+
+/* ---------- Formulários ---------- */
+.formulario label {
+    display: block;
+    margin: 20px 0 6px;
+    font-size: 0.95rem; font-weight: 600;
+}
+
+input, select {
+    width: 100%;
+    min-height: 50px;
+    padding: 10px 14px;
+    font: inherit;
+    color: var(--preto);
+    background: var(--branco);
+    border: 2px solid var(--fio-forte);
+    border-radius: 0;
+}
+input::placeholder { color: #767674; }
+input:hover, select:hover { border-color: var(--preto); }
+input:focus, select:focus { outline: none; border-color: var(--preto); box-shadow: 0 0 0 4px var(--amarelo); }
+
+.dica { margin: 8px 0 0; font-size: 0.9rem; color: var(--texto-suave); }
+
+.campos-lado { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.campo-moeda { display: flex; }
+.campo-moeda span {
+    display: grid; place-items: center;
+    padding: 0 14px;
+    font-family: var(--display); font-size: 1.15rem;
+    background: var(--amarelo);
+    border: 2px solid var(--fio-forte); border-right: none;
+}
+.campo-moeda:focus-within span { border-color: var(--preto); }
+
+/* ---------- Pesquisa ---------- */
+.busca { display: flex; flex-wrap: wrap; gap: 10px; max-width: 720px; margin-bottom: 24px; }
+.busca input { flex: 1 1 0; min-width: 0; }
+.busca .botao { flex: none; }
+
+/* ---------- Lista de preços ---------- */
+.secao { margin-bottom: 28px; }
+
+.secao-faixa {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    padding: 10px 20px 8px;
+    font-family: var(--display);
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--branco);
+    background: var(--preto);
+}
+.secao-faixa span { font-family: var(--texto); font-size: 0.95rem; font-weight: 500; color: #d6d6d4; }
+
+.vitrine {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    margin: 0; padding: 0;
+    list-style: none;
+    border: 1px solid var(--fio);
+    border-top: none;
+    overflow: hidden;
+}
+
+.item {
+    display: flex; flex-direction: column;
+    margin: 0 -1px -1px 0;
+    padding: 16px 20px 0;
+    border-right: 1px solid var(--fio);
+    border-bottom: 1px solid var(--fio);
+}
+.item-nome {
+    font-size: 1.1rem; font-weight: 600; line-height: 1.3;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+.item-nome:hover { text-decoration: underline; color: var(--preto); }
+.item-codigo { margin-top: 4px; font-size: 0.85rem; color: var(--texto-suave); font-variant-numeric: tabular-nums; }
+
+.item-base {
+    display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    margin-top: auto; padding-top: 14px;
+}
+
+.item-acoes {
+    display: flex;
+    margin: 14px -20px 0;
+    border-top: 1px solid var(--fio);
+}
+.item-acoes form { display: contents; }
+.item-acoes a, .item-acoes button {
+    flex: 1;
+    min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 12px;
+    font: inherit; font-size: 0.9rem; font-weight: 600;
+    color: var(--preto);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.item-acoes button { color: var(--vermelho-escuro); border-left: 1px solid var(--fio); }
+.item-acoes a:hover { color: var(--preto); background: var(--amarelo); }
+.item-acoes button:hover { color: var(--branco); background: var(--vermelho); }
+
+/* ---------- Totais do painel (fechamento da tabela) ---------- */
+.totais ul { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--fio); }
+.totais a {
+    display: flex; align-items: baseline; gap: 16px;
+    padding: 18px 20px;
+    font-size: 1.25rem; font-weight: 600;
+    text-decoration: none;
+    border-top: 1px solid var(--fio);
+}
+.totais li:first-child a { border-top: none; }
+.totais a::after {
+    content: ""; order: 2; flex: 1;
+    border-bottom: 2px dotted var(--fio-forte);
+    transform: translateY(-0.3em);
+}
+.totais strong {
+    order: 3;
+    font-family: var(--display);
+    font-size: clamp(2.8rem, 2rem + 2.4vw, 4.2rem);
+    font-weight: 400;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.totais a:hover { color: var(--preto); }
+.totais a:hover strong { background: var(--amarelo); }
+
+/* ---------- Ficha do produto ---------- */
+.ficha { max-width: 920px; background: var(--branco); border: 1px solid var(--fio); }
+.ficha-topo { padding: 26px 32px 22px; border-top: 8px solid var(--preto); border-bottom: 1px solid var(--fio); }
+.ficha-codigo { display: block; margin-top: 8px; font-size: 0.95rem; font-weight: 600; color: var(--texto-suave); }
+
+.ficha-corpo { display: grid; grid-template-columns: auto 1fr; gap: 40px; padding: 32px; }
+.ficha-preco { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+
+.dados { margin: 0; }
+.dados div {
+    display: grid; grid-template-columns: 11rem 1fr; gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--fio);
+}
+.dados div:first-child { padding-top: 0; }
+.dados dt { color: var(--texto-suave); }
+.dados dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+
+.ficha-acoes {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    padding: 22px 32px;
+    border-top: 1px solid var(--fio);
+    background: var(--fundo-rodape);
+}
+.ficha-excluir { margin-left: auto; }
+
+.ficha-formulario { max-width: 680px; }
+.ficha-corpo-formulario { padding: 8px 32px 0; }
+.ficha-corpo-formulario .ficha-acoes { margin: 32px -32px 0; }
+
+/* ---------- Tabela de usuários ---------- */
+.tabela-caixa { background: var(--branco); border: 1px solid var(--fio); overflow-x: auto; }
+.tabela { width: 100%; border-collapse: collapse; }
+.tabela th, .tabela td { padding: 15px 20px; text-align: left; }
+.tabela th { font-weight: 600; color: var(--branco); background: var(--preto); }
+.tabela td { border-bottom: 1px solid var(--fio); }
+.tabela tbody tr:last-child td { border-bottom: none; }
+.tabela .numero { text-align: right; font-variant-numeric: tabular-nums; }
+.tabela-nome { font-weight: 600; }
+.contagem { font-family: var(--display); font-size: 1.5rem; line-height: 1; }
+.selo-voce {
+    margin-left: 8px; padding: 2px 8px;
+    font-size: 0.8rem; font-weight: 700;
+    background: var(--amarelo);
+}
+
+/* ---------- Avisos e estados vazios ---------- */
+.mensagens { display: grid; gap: 8px; margin-bottom: 28px; }
+.aviso { margin: 0; padding: 14px 18px; font-weight: 600; }
+.aviso-erro { color: var(--branco); background: var(--vermelho); }
+.aviso-sucesso { color: var(--branco); background: var(--preto); }
+.aviso-sucesso::before {
+    content: ""; display: inline-block;
+    width: 10px; height: 10px; margin-right: 12px;
+    background: var(--amarelo);
+}
+
+.vazio {
+    margin-top: 28px;
+    padding: 44px 36px;
+    background: var(--branco);
+    border: 2px dashed var(--fio-forte);
+}
+.vazio h2 { font-family: var(--display); font-size: 2rem; font-weight: 400; line-height: 1.1; }
+.vazio p { max-width: 56ch; margin: 12px 0 24px; color: var(--texto-suave); }
+
+/* ---------- Entrar e criar conta ---------- */
+.acesso { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 100vh; }
+
+.acesso-vitrine {
+    display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
+    padding: 56px var(--margem);
+    color: var(--branco);
+    background: var(--vermelho);
+    overflow: hidden;
+}
+.acesso-marca {
+    margin: 0;
+    max-width: 8ch;
+    font-family: var(--display);
+    font-size: clamp(3rem, 1.6rem + 4.4vw, 6.5rem);
+    line-height: 0.98;
+}
+.acesso-lema { margin: 0; max-width: 30ch; font-size: 1.2rem; font-weight: 500; }
+.acesso-vitrine .etiqueta-preco { align-self: flex-start; transform: rotate(-4deg); transform-origin: left bottom; }
+
+.acesso-formulario {
+    display: flex; flex-direction: column; justify-content: center;
+    width: 100%; max-width: 480px;
+    margin: 0 auto;
+    padding: 56px var(--margem);
+}
+.acesso-formulario .formulario { margin-top: 8px; }
+.troca { margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--fio); color: var(--texto-suave); }
+
+/* ---------- Telas médias ---------- */
+@media (max-width: 900px) {
+    .faixa { flex-wrap: wrap; padding-top: 14px; }
+    .abas {
+        order: 3; width: calc(100% + 2 * var(--margem));
+        margin: 6px calc(var(--margem) * -1) 0;
+        padding: 0 calc(var(--margem) - 16px);
+        overflow-x: auto;
+    }
+    .abas a { min-height: 48px; }
+    .ficha-corpo { grid-template-columns: 1fr; gap: 28px; }
+    .acesso { grid-template-columns: 1fr; align-content: start; }
+    .acesso-vitrine { gap: 24px; padding-block: 36px; }
+    .acesso-vitrine .etiqueta-gigante { font-size: 4.5rem; }
+}
+
+/* ---------- Telas pequenas ---------- */
+@media (max-width: 640px) {
+    body { font-size: 16px; }
+    .marca { font-size: 1.45rem; }
+    .sessao-nome { display: none; }
+    .pagina { padding-top: 28px; }
+    .cabecalho .botao { width: 100%; }
+    .totais a { padding-inline: 4px; font-size: 1.05rem; }
+    .campos-lado { grid-template-columns: 1fr; }
+    .ficha-topo, .ficha-corpo, .ficha-acoes, .ficha-corpo-formulario { padding-inline: 20px; }
+    .ficha-corpo-formulario .ficha-acoes { margin-inline: -20px; }
+    .ficha-excluir { margin-left: 0; }
+    .dados div { grid-template-columns: 1fr; gap: 2px; }
+
+    /* tabela vira fichas empilhadas */
+    .tabela-caixa { background: none; border: none; }
+    .tabela thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .tabela, .tabela tbody, .tabela tr, .tabela td { display: block; }
+    .tabela tr { margin-bottom: 10px; padding: 14px 16px; background: var(--branco); border: 1px solid var(--fio); }
+    .tabela td {
+        display: flex; justify-content: space-between; gap: 12px;
+        padding: 6px 0;
+        text-align: right; overflow-wrap: anywhere;
+        border: none;
+    }
+    .tabela td[data-rotulo]::before { content: attr(data-rotulo); color: var(--texto-suave); text-align: left; }
+    .tabela .tabela-nome { display: block; padding-bottom: 10px; text-align: left; font-size: 1.1rem; }
+}

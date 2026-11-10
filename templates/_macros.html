@@ -1,0 +1,15 @@
+{# Etiqueta amarela de preço, no padrão das lojas: R$ pequeno, reais grandes, centavos sobrescritos #}
+{% macro etiqueta(preco, tamanho='') -%}
+    {% set reais, centavos = preco | preco_varejo %}
+    <span class="etiqueta-preco {{ tamanho }}" aria-label="{{ preco | moeda }}">
+        <span class="etiqueta-rs" aria-hidden="true">R$</span><span class="etiqueta-reais" aria-hidden="true">{{ reais }}</span><span class="etiqueta-centavos" aria-hidden="true">,{{ centavos }}</span>
+    </span>
+{%- endmacro %}
+
+{# Situação do estoque: esgotado, últimas unidades (até o limite) ou quantidade normal #}
+{% macro estoque(quantidade, limite) -%}
+    {% if quantidade == 0 %}<span class="estoque estoque-esgotado">Esgotado</span>
+    {%- elif quantidade <= limite %}<span class="estoque estoque-ultimas">{{ 'Última unidade' if quantidade == 1 else 'Últimas ' ~ quantidade ~ ' un.' }}</span>
+    {%- else %}<span class="estoque">{{ quantidade }} un.</span>
+    {%- endif %}
+{%- endmacro %}
